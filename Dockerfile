@@ -12,11 +12,13 @@ RUN apk add ca-certificates so:libada.so.2 so:libbase64.so.0 so:libbrotlidec.so.
 
 ENTRYPOINT ["/usr/bin/code", "tunnel", "--accept-server-license-terms"]
 
-FROM base AS full-dev
+FROM base AS base-dev
 # We want an environment where developers can run commands and have a development environment where they can run any commands they might need
 
 RUN apk add git
 RUN apk add docker-cli
+
+FROM base-dev as full-dev
 
 # Common programming languages
 RUN apk add nodejs npm python3 py3-pip
