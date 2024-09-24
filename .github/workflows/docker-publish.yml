@@ -49,6 +49,26 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
+      - name: Get actual version
+        id: version-actual
+        env:
+          REF: ${{ github.ref }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          if [[ $REF == refs/tags/* ]]; then
+            # We have a tag, might be a pure version or have a dash
+            if [[ $REF_NAME == *-* ]]; then
+              # We have a hyphenated tag, the first half should be the right version
+              IFS='-' read -ra VERSION_PARTS <<< "$REF_NAME"
+              echo "CODE_CLI_VERSION=${VERSION_PARTS[0]}" >> ${GITHUB_ENV}
+            else
+              echo "CODE_CLI_VERSION=${REF_NAME}" >> ${GITHUB_ENV}
+            fi
+          else
+            echo "CODE_CLI_VERSION=latest" >> ${GITHUB_ENV}
+          fi
+     
+
       - name: Build and push Docker image
         id: build
         uses: docker/build-push-action@v5 # v5.0.0
@@ -61,7 +81,7 @@ jobs:
           provenance: true
           sbom: true
           outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
-          build-args: "VERSION=${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'latest' }}"
+          build-args: "VERSION=${{ env.CODE_CLI_VERSION }}"
 
       - name: Export digest
         run: |
