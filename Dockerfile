@@ -1,8 +1,10 @@
 FROM alpine:3.20.3 AS base
 
 WORKDIR /vscode
+ARG VERSION=latest
 
-RUN wget -O /vscode/vscode_cli.tar.gz 'https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64' \
+RUN ARCH_FULL=`uname -m`; case "$ARCH_FULL" in "x86_64") ARCH="x64";; "aarch64") ARCH="arm64";; "armv7l") ARCH="armhf";; esac; \
+    && wget -O /vscode/vscode_cli.tar.gz https://update.code.visualstudio.com/${VERSION}/cli-linux-${ARCH}/stable \
     && tar -xf /vscode/vscode_cli.tar.gz  \
     && mv /vscode/code /usr/bin/code \
     && rm /vscode/vscode_cli.tar.gz
@@ -18,7 +20,7 @@ FROM base AS base-dev
 RUN apk add git
 RUN apk add docker-cli
 
-FROM base-dev as full-dev
+FROM base-dev AS full-dev
 
 # Common programming languages
 RUN apk add nodejs npm python3 py3-pip
