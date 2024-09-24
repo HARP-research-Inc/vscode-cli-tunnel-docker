@@ -24,3 +24,6 @@ FROM base-dev AS full-dev
 
 # Common programming languages
 RUN apk add nodejs npm python3 py3-pip
+
+# Useful for monitoring the server
+RUN apk add jq
