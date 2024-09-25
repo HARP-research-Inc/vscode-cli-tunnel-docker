@@ -20,6 +20,9 @@ FROM base AS base-dev
 RUN apk add git
 RUN apk add docker-cli
 
+# Since we added Docker, we need to add the Docker extension as well
+ENTRYPOINT ["/usr/bin/code", "tunnel", "--accept-server-license-terms", "--install-extension", "ms-azuretools.vscode-docker"]
+
 FROM base-dev AS full-dev
 
 # Common programming languages
@@ -32,7 +35,6 @@ RUN apk add jq
 RUN apk add procps
 RUN apk add bash 
 
-RUN rm -rf /root
-RUN ln -s /vscode/roothome /root
-RUN rm -r /bin/sh
-RUN ln -s /bin/bash /bin/sh
+COPY ./config-files/etc/profile.d/* /etc/profile.d/
+COPY ./apply-full-dev-env.sh /apply-full-dev-env.sh
+RUN chmod +x /apply-full-dev-env.sh && /apply-full-dev-env.sh && rm /apply-full-dev-env.sh
