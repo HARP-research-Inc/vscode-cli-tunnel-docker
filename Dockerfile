@@ -27,3 +27,12 @@ RUN apk add nodejs npm python3 py3-pip
 
 # Useful for monitoring the server
 RUN apk add jq
+
+# This allows using a proper `ps` (useful for vscode view processes)
+RUN apk add procps
+RUN apk add bash 
+
+RUN rm -rf /root
+RUN ln -s /vscode/roothome /root
+RUN rm -r /bin/sh
+RUN ln -s /bin/bash /bin/sh
