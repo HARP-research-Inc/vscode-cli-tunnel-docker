@@ -18,7 +18,7 @@ FROM base AS base-dev
 # We want an environment where developers can run commands and have a development environment where they can run any commands they might need
 
 RUN apk add git
-RUN apk add docker-cli
+RUN apk add docker-cli docker-cli-compose
 
 # Since we added Docker, we need to add the Docker extension as well
 ENTRYPOINT ["/usr/bin/code", "tunnel", "--accept-server-license-terms", "--install-extension", "ms-azuretools.vscode-docker"]
