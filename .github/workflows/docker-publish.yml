@@ -50,7 +50,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           flavor: |
-            latest=${{ matrix.target == 'base' && github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/') }}
+            latest=false
             suffix=-${{ matrix.target}}
 
       - name: Get actual version
