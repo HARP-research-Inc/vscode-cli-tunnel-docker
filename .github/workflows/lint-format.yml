@@ -57,7 +57,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install ShellCheck
-        run: apt install shellcheck
+        run: sudo apt install shellcheck
 
       - name: Lint shell scripts
         run: |
