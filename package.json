@@ -1,0 +1,30 @@
+{
+  "name": "vscode-cli-tunnel-docker",
+  "version": "1.0.0",
+  "description": "Docker container for vscode tunnel",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
+    "actionlint": "docker run --rm -v $(pwd):/repo --workdir /repo rhysd/actionlint:latest -color"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HARP-research-Inc/vscode-cli-tunnel-docker.git"
+  },
+  "keywords": [
+    "vscode",
+    "docker",
+    "tunnel"
+  ],
+  "author": "HARP Research",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HARP-research-Inc/vscode-cli-tunnel-docker/issues"
+  },
+  "homepage": "https://github.com/HARP-research-Inc/vscode-cli-tunnel-docker#readme",
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  }
+}

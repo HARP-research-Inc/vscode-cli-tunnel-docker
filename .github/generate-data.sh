@@ -15,7 +15,7 @@ fi
 
 # Generate the tags to push to docker
 if [[ $REF == refs/tags/* ]]; then
-    get_tag "latest-$TARGET"
+    get_tag "$TARGET"
     if [[ $TARGET == "base" ]]; then
         get_tag "latest"
     fi
