@@ -7,7 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
-    "actionlint": "docker run --rm -v $(pwd):/repo --workdir /repo rhysd/actionlint:latest -color"
+    "actionlint": "docker run --rm -v \"$(pwd):/repo\" --workdir /repo rhysd/actionlint:latest -color",
+    "hadolint": "docker run --rm -v \"$(pwd)/Dockerfile:/Dockerfile\" hadolint/hadolint:latest-alpine hadolint Dockerfile --ignore DL3018 --ignore DL3019",
+    "shellcheck": "docker run --rm -v \"$(pwd):/mnt\" koalaman/shellcheck:stable $(find . -name \"*.sh\" -type f)",
+    "all": "npm run prettier && npm run actionlint && npm run hadolint && npm run shellcheck"
   },
   "repository": {
     "type": "git",

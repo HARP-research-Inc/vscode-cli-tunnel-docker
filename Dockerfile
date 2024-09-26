@@ -3,8 +3,8 @@ FROM alpine:3.20.3 AS base
 WORKDIR /vscode
 ARG VERSION=latest
 
-RUN ARCH_FULL=`uname -m`; case "$ARCH_FULL" in "x86_64") ARCH="x64";; "aarch64") ARCH="arm64";; esac \
-    && wget -O /vscode/vscode_cli.tar.gz https://update.code.visualstudio.com/${VERSION}/cli-alpine-${ARCH}/stable \
+RUN ARCH_FULL="$(uname -m)"; case "$ARCH_FULL" in "x86_64") ARCH="x64";; "aarch64") ARCH="arm64";; esac \
+    && wget -q -O /vscode/vscode_cli.tar.gz "https://update.code.visualstudio.com/${VERSION}/cli-alpine-${ARCH}/stable" \
     && tar -xf /vscode/vscode_cli.tar.gz  \
     && mv /vscode/code /usr/bin/code \
     && rm /vscode/vscode_cli.tar.gz
@@ -17,8 +17,7 @@ ENTRYPOINT ["/usr/bin/code", "tunnel", "--accept-server-license-terms"]
 FROM base AS base-dev
 # We want an environment where developers can run commands and have a development environment where they can run any commands they might need
 
-RUN apk add git
-RUN apk add docker-cli docker-cli-compose
+RUN apk add git docker-cli docker-cli-compose
 
 # Since we added Docker, we need to add the Docker extension as well
 ENTRYPOINT ["/usr/bin/code", "tunnel", "--accept-server-license-terms", "--install-extension", "ms-azuretools.vscode-docker"]
@@ -26,15 +25,7 @@ ENTRYPOINT ["/usr/bin/code", "tunnel", "--accept-server-license-terms", "--insta
 FROM base-dev AS full-dev
 
 # Common programming languages
-RUN apk add nodejs npm python3 py3-pip
-RUN apk add curl
-
-# Useful for monitoring the server
-RUN apk add jq
-
-# This allows using a proper `ps` (useful for vscode view processes)
-RUN apk add procps
-RUN apk add bash 
+RUN apk add nodejs npm python3 py3-pip curl jq procps bash
 
 COPY ./config-files/etc/profile.d/* /etc/profile.d/
 COPY ./apply-full-dev-env.sh /apply-full-dev-env.sh

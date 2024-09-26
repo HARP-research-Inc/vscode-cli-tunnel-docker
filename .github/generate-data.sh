@@ -23,6 +23,8 @@ fi
 
 # Print multi-line string to github ENV
 
-echo 'DOCKER_TAGS_AUTO_GEN<<EOF' >> "$GITHUB_ENV"
-cat /tmp/docker-tags.txt >> "$GITHUB_ENV"
-echo EOF >> "$GITHUB_ENV"
+{ 
+    echo 'DOCKER_TAGS_AUTO_GEN<<EOF' 
+    cat /tmp/docker-tags.txt
+    echo EOF >> "$GITHUB_ENV"
+} >> "$GITHUB_ENV"

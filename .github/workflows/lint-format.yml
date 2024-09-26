@@ -1,0 +1,65 @@
+name: "Lint & Format"
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint & Format
+        run: npm run prettier:check
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Download actionlint
+        id: get_actionlint
+        run: bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+
+      - name: Check workflow files
+        run: "${{ steps.get_actionlint.outputs.executable }} -color"
+  hadolint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download hadolint
+        run: curl -sL -o hadolint "https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64" && chmod +x hadolint
+
+      - name: Lint Dockerfile
+        run: ./hadolint Dockerfile --ignore DL3018 --ignore DL3019
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: apt install shellcheck
+
+      - name: Lint shell scripts
+        run: |
+          # shellcheck disable=SC2046
+          shellcheck $(find . -type f -name "*.sh")
