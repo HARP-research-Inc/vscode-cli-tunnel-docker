@@ -41,10 +41,9 @@ if [[ $TARGET == "base" ]]; then
 fi
 
 # Generate the tags to push to docker
-semver_regex='(\d+)\.(\d+)\.(\d+)' # We can have a dash and stuff after, but this regex only matters for the semver bit
 if [[ $REF == refs/tags/* ]]; then
     get_tag "$TARGET"
-    read MAJOR MINOR PATCH EXTRA <<< "$(echo "$REF_NAME" | awk -F '[\.\-]' '{print $1 " " $2 " " $3 " " $4}')"
+    read -r MAJOR MINOR PATCH <<< "$(echo "$REF_NAME" | awk -F '[\.\-]' '{print $1 " " $2 " " $3}')"
     # If we did not get a numeric major, minor, or patch, exit with an error
     if ! [[ $MAJOR =~ ^[0-9]+$ ]]; then
         echo "Major version is not a number"
