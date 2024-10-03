@@ -15,17 +15,13 @@ jobs:
       - name: Get latest version
         id: get_version
         run: |
-          printf "version=%s\n" "$(curl "https://update.code.visualstudio.com/api/update/linux-x64/stable/latest" | jq -r '.version')" >> "${GITHUB_OUTPUT}"
+          printf "version=%s\n" "$(curl "https://update.code.visualstudio.com/api/update/linux-x64/stable/latest" | jq -r '.productVersion')" >> "${GITHUB_OUTPUT}"
       - name: Check if git tag with version exists and make release
         id: check_tag
         env:
           version: ${{ steps.get_version.outputs.version }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -z "${VERSION}" ]; then
-            echo "No valid version provided"
-            exit 1
-          fi
           if git rev-parse "refs/tags/${version}" >/dev/null 2>&1; then
             echo "Tag ${version} already exists"
           else
