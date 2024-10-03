@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   update:
@@ -30,4 +31,5 @@ jobs:
           else
             echo "Tag ${version} does not exist"
             gh release create "${version}" -t "Version ${version}" --notes "This release matches version ${version} of the Visual Studio Code CLI."
+            gh workflow run docker-publish.yml --ref "refs/tags/${version}"
           fi
