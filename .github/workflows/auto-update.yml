@@ -1,0 +1,27 @@
+name: "Auto Update Container Image"
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+      - name: Get latest version
+        id: get_version
+        run: |
+          printf "version=%s\n" "(curl "https://update.code.visualstudio.com/api/update/linux-x64/stable/latest" | jq -r '.version')" >> "${GITHUB_OUTPUT}"
+      - name: Check if git tag with version exists and make release
+        id: check_tag
+        run: |
+          if git rev-parse "refs/tags/${version}" >/dev/null 2>&1; then
+            echo "Tag ${version} already exists"
+          else
+            echo "Tag ${version} does not exist"
+            gh release create "${version}" -t "Version ${version}" --notes "This release matches version ${version} of the Visual Studio Code CLI."
+          fi
