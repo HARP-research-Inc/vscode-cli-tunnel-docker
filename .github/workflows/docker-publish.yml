@@ -94,10 +94,16 @@ jobs:
           digest="${{ steps.build.outputs.digest }}"
           touch "/tmp/digests/${{ matrix.target }}/${digest#sha256:}"
 
+      - name: "Get arch name (compatible with docker manifest)"
+        id: get_arch_name
+        run: |
+          SAFENAME="$(echo "${{ matrix.platform }}" | sed 's/\//_/g')"
+          echo "ARCH_NAME=${SAFENAME}" >> "${GITHUB_OUTPUT}"
+
       - name: Upload digest
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: "digests-${{ matrix.target }}"
+          name: "digests-${{ matrix.target }}-${{ steps.get_arch_name.outputs.ARCH_NAME }}"
           path: "/tmp/digests/${{ matrix.target }}/*"
           if-no-files-found: error
           retention-days: 1
@@ -122,10 +128,15 @@ jobs:
           echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> "${GITHUB_ENV}"
 
       - name: Download digests
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: "digests-${{ matrix.target }}"
-          path: "/tmp/digests/${{ matrix.target }}"
+          pattern: "digests-${{ matrix.target }}-*"
+          path: "/tmp/digests/"
+
+      - name: Move to one directory
+        run: |
+          mkdir -p /tmp/digests-all
+          mv /tmp/digests/*/* /tmp/digests-all
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -155,7 +166,7 @@ jobs:
           password: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Create manifest list and push
-        working-directory: "/tmp/digests/${{ matrix.target }}"
+        working-directory: "/tmp/digests-all"
         run: |
           # shellcheck disable=SC2046
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") $(printf '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@sha256:%s ' *)
