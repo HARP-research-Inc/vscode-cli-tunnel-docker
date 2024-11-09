@@ -103,7 +103,7 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
-          name: "digests-${{ matrix.target }}-${{ steps.get_arch_name.outputs.ARCH_NAME }}"
+          name: "digests-${{ matrix.target }}-plat-${{ steps.get_arch_name.outputs.ARCH_NAME }}"
           path: "/tmp/digests/${{ matrix.target }}/*"
           if-no-files-found: error
           retention-days: 1
@@ -130,7 +130,7 @@ jobs:
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
-          pattern: "digests-${{ matrix.target }}-*"
+          pattern: "digests-${{ matrix.target }}-plat-*"
           path: "/tmp/digests/"
 
       - name: Move to one directory
